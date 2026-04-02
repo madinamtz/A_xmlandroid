@@ -21,7 +21,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
+        // Cache la barre en haut
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         // Vérification de session au démarrage
         prefs = getSharedPreferences("mon_app", Context.MODE_PRIVATE);
         int userId = prefs.getInt("utilisateur_id", -1);

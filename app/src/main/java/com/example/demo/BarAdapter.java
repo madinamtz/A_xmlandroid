@@ -14,7 +14,7 @@ public class BarAdapter extends RecyclerView.Adapter<BarAdapter.BarViewHolder> {
     private List<Bar> bars;
     private final OnBarClickListener listener;
 
-    
+
     public interface OnBarClickListener {
         void onBarClick(Bar bar);
     }

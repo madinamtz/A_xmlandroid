@@ -43,7 +43,12 @@ public class ProfilActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profil); //
+        setContentView(R.layout.activity_profil);
+
+        // --- ON CACHE LA BARRE ICI AUSSI ---
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
 
         // Initialisation de la base de données
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "app_database").build();

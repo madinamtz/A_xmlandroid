@@ -20,6 +20,10 @@ public class InscriptionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inscription);
 
+        // Cache la barre en haut
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         db = Room.databaseBuilder(
                 getApplicationContext(),
                 AppDatabase.class,
