@@ -1,8 +1,10 @@
 package com.example.demo;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button; // Import du Bouton
 import android.widget.RatingBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -47,9 +49,23 @@ public class BarAdapter extends RecyclerView.Adapter<BarAdapter.BarViewHolder> {
         // --- LOGIQUE POUR LES AMBIANCES ---
         if (bar.ambiances != null && !bar.ambiances.isEmpty()) {
             holder.ambiances.setText("Ambiances : " + bar.ambiances);
-            holder.ambiances.setVisibility(View.VISIBLE); // On l'affiche
+            holder.ambiances.setVisibility(View.VISIBLE);
         } else {
-            holder.ambiances.setVisibility(View.GONE); // On le cache s'il n'y a rien
+            holder.ambiances.setVisibility(View.GONE);
+        }
+
+        // --- LOGIQUE POUR L'ALBUM PHOTO ---
+        // On n'affiche le bouton que si la chaîne photosPaths contient quelque chose
+        if (bar.photosPaths != null && !bar.photosPaths.isEmpty()) {
+            holder.btnAlbum.setVisibility(View.VISIBLE);
+            holder.btnAlbum.setOnClickListener(v -> {
+                Intent intent = new Intent(v.getContext(), AlbumActivity.class);
+                intent.putExtra("PHOTOS_PATHS", bar.photosPaths);
+                intent.putExtra("BAR_NOM", bar.nom);
+                v.getContext().startActivity(intent);
+            });
+        } else {
+            holder.btnAlbum.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -67,6 +83,7 @@ public class BarAdapter extends RecyclerView.Adapter<BarAdapter.BarViewHolder> {
     static class BarViewHolder extends RecyclerView.ViewHolder {
         TextView nom, adresse, ambiances, commentaire;
         RatingBar rating;
+        Button btnAlbum; // Déclaration du bouton
 
         public BarViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -75,6 +92,7 @@ public class BarAdapter extends RecyclerView.Adapter<BarAdapter.BarViewHolder> {
             rating = itemView.findViewById(R.id.item_rating_bar);
             ambiances = itemView.findViewById(R.id.item_ambiances_bar);
             commentaire = itemView.findViewById(R.id.item_commentaire_bar);
+            btnAlbum = itemView.findViewById(R.id.btn_consulter_album); // ID à ajouter dans item_bar.xml
         }
     }
 }

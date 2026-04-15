@@ -21,7 +21,7 @@
         android:id="@+id/inscription_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="100dp"
         android:ems="12"
         android:hint="Email"
         android:inputType="textEmailAddress"
@@ -35,7 +35,7 @@
         android:id="@+id/inscription_pseudo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:ems="12"
         android:hint="Pseudo"
         android:inputType="textPersonName"
@@ -49,7 +49,7 @@
         android:id="@+id/inscription_dob"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="128dp"
         android:ems="12"
         android:hint="Date de naissance (JJ/MM/AAAA)"
         android:inputType="date"
@@ -70,6 +70,7 @@
         android:textColor="@color/light_grey"
         android:textColorHint="@color/light_grey"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inscription_dob" />
 
@@ -77,13 +78,14 @@
         android:id="@+id/inscription_confirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="188dp"
         android:ems="12"
         android:hint="Confirmer le mot de passe"
         android:inputType="textPassword"
         android:textColor="@color/light_grey"
         android:textColorHint="@color/light_grey"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.387"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inscription_password" />
 
@@ -102,12 +104,13 @@
         android:id="@+id/inscription_btn"
         android:layout_width="310dp"
         android:layout_height="44dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="212dp"
         android:backgroundTint="@color/pink"
         android:text="S'inscrire"
         android:textAllCaps="false"
         app:cornerRadius="28dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inscription_error" />
 
@@ -121,5 +124,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inscription_btn" />
+
+    <EditText
+        android:id="@+id/inscription_dob"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Date de naissance (JJ/MM/AAAA)"
+        android:inputType="date" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

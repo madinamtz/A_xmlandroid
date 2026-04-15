@@ -15,4 +15,5 @@ public class Bar {
     public float note; // Pour les étoiles
     public String commentaire;
     public String ambiances;
+    public String photosPaths;
 }

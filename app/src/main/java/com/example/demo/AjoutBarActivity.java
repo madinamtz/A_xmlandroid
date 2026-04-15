@@ -1,10 +1,14 @@
 package com.example.demo;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 import com.google.android.material.chip.Chip;
@@ -16,18 +20,38 @@ public class AjoutBarActivity extends AppCompatActivity {
     private AppDatabase db;
     private int userId;
 
+    // Liste pour stocker les URIs des photos sélectionnées
+    private List<String> barPhotosPaths = new ArrayList<>();
+
+    // Outil pour ouvrir la galerie et récupérer les photos une par une
+    private final ActivityResultLauncher<String> getBarPhoto = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    try {
+                        // Demander la permission
+                        getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                        barPhotosPaths.add(uri.toString());
+                        Toast.makeText(this, "Photo ajoutée à l'album (" + barPhotosPaths.size() + ")", Toast.LENGTH_SHORT).show();
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
+                        Toast.makeText(this, "Erreur de permission image", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+    );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ajout_bar);
 
-        // --- 1. CONFIGURATION DE LA BARRE DU HAUT ---
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("Ajouter un bar");
         }
 
-        // --- 2. INITIALISATION ---
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "app_database")
                 .fallbackToDestructiveMigration()
                 .build();
@@ -41,18 +65,20 @@ public class AjoutBarActivity extends AppCompatActivity {
         ChipGroup chipGroupAmbiance = findViewById(R.id.chip_group_ambiance);
         Button btnSave = findViewById(R.id.save_bar_btn);
 
-        // --- 3. LOGIQUE LIMITE 3 AMBIANCES ---
+        // --- NOUVEAU : BOUTON POUR AJOUTER UNE PHOTO ---
+        Button btnAddPhoto = findViewById(R.id.btn_add_photo);
+        btnAddPhoto.setOnClickListener(v -> getBarPhoto.launch("image/*"));
+
         for (int i = 0; i < chipGroupAmbiance.getChildCount(); i++) {
             Chip chip = (Chip) chipGroupAmbiance.getChildAt(i);
             chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked && chipGroupAmbiance.getCheckedChipIds().size() > 3) {
-                    buttonView.setChecked(false); // On décoche si on dépasse 3
+                    buttonView.setChecked(false);
                     Toast.makeText(this, "3 ambiances maximum !", Toast.LENGTH_SHORT).show();
                 }
             });
         }
 
-        // --- 4. SAUVEGARDE ---
         btnSave.setOnClickListener(v -> {
             String nom = editNom.getText().toString().trim();
 
@@ -61,15 +87,16 @@ public class AjoutBarActivity extends AppCompatActivity {
                 return;
             }
 
-            // Récupération des ambiances sélectionnées
             List<Integer> ids = chipGroupAmbiance.getCheckedChipIds();
             List<String> selectedAmbiances = new ArrayList<>();
             for (Integer id : ids) {
                 Chip chip = findViewById(id);
                 selectedAmbiances.add(chip.getText().toString());
             }
-            // On transforme la liste en une seule chaîne (ex: "Chill, House, Techno")
             String ambiancesString = android.text.TextUtils.join(", ", selectedAmbiances);
+
+            // CONVERSION DE LA LISTE DE PHOTOS EN STRING ---
+            String allPhotosString = android.text.TextUtils.join(",", barPhotosPaths);
 
             Bar nouveauBar = new Bar();
             nouveauBar.nom = nom;
@@ -77,12 +104,13 @@ public class AjoutBarActivity extends AppCompatActivity {
             nouveauBar.commentaire = editComm.getText().toString();
             nouveauBar.note = ratingBar.getRating();
             nouveauBar.utilisateurId = userId;
-            nouveauBar.ambiances = ambiancesString; // On enregistre la nouvelle donnée !
+            nouveauBar.ambiances = ambiancesString;
+            nouveauBar.photosPaths = allPhotosString; // On enregistre la chaîne d'URIs
 
             new Thread(() -> {
                 db.barDao().inserer(nouveauBar);
                 runOnUiThread(() -> {
-                    Toast.makeText(this, "Bar ajouté !", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Bar ajouté avec son album !", Toast.LENGTH_SHORT).show();
                     finish();
                 });
             }).start();
