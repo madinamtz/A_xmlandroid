@@ -50,6 +50,73 @@
         android:textColor="@android:color/black"
         android:layout_marginTop="20dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ambiances (3 max) :"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="20dp"
+        android:textStyle="bold" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chip_group_ambiance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:chipSpacingVertical="8dp"
+        app:chipSpacingHorizontal="8dp">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_chill"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chill" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_lgbt"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LGBTQIA+" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_shatta"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Shatta" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_house"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="House" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_commercial"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Commercial" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_techno"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Techno" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_hard"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hard" />
+
+    </com.google.android.material.chip.ChipGroup>
+
+
     <Button
         android:id="@+id/save_bar_btn"
         android:textAllCaps="false"

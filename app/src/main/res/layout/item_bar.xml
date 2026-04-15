@@ -43,6 +43,17 @@
             android:textSize="14sp" />
 
         <TextView
+            android:id="@+id/item_ambiances_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Ambiances : Chill, Techno"
+            android:textColor="@color/blue_logo"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/item_commentaire_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

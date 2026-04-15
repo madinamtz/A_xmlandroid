@@ -14,7 +14,6 @@ public class BarAdapter extends RecyclerView.Adapter<BarAdapter.BarViewHolder> {
     private List<Bar> bars;
     private final OnBarClickListener listener;
 
-
     public interface OnBarClickListener {
         void onBarClick(Bar bar);
     }
@@ -39,13 +38,20 @@ public class BarAdapter extends RecyclerView.Adapter<BarAdapter.BarViewHolder> {
     public void onBindViewHolder(@NonNull BarViewHolder holder, int position) {
         Bar bar = bars.get(position);
 
-        // Affichage des informations de base sur la carte
+        // Affichage des informations de base
         holder.nom.setText(bar.nom);
         holder.adresse.setText(bar.adresse);
         holder.rating.setRating(bar.note);
+        holder.commentaire.setText(bar.commentaire);
 
-        // Quand on clique sur le bar, on envoie l'objet "bar" complet (avec le commentaire)
-        // vers la HomeActivity pour l'afficher dans l'AlertDialog
+        // --- LOGIQUE POUR LES AMBIANCES ---
+        if (bar.ambiances != null && !bar.ambiances.isEmpty()) {
+            holder.ambiances.setText("Ambiances : " + bar.ambiances);
+            holder.ambiances.setVisibility(View.VISIBLE); // On l'affiche
+        } else {
+            holder.ambiances.setVisibility(View.GONE); // On le cache s'il n'y a rien
+        }
+
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onBarClick(bar);
@@ -59,7 +65,7 @@ public class BarAdapter extends RecyclerView.Adapter<BarAdapter.BarViewHolder> {
     }
 
     static class BarViewHolder extends RecyclerView.ViewHolder {
-        TextView nom, adresse;
+        TextView nom, adresse, ambiances, commentaire;
         RatingBar rating;
 
         public BarViewHolder(@NonNull View itemView) {
@@ -67,6 +73,8 @@ public class BarAdapter extends RecyclerView.Adapter<BarAdapter.BarViewHolder> {
             nom = itemView.findViewById(R.id.item_nom_bar);
             adresse = itemView.findViewById(R.id.item_adresse_bar);
             rating = itemView.findViewById(R.id.item_rating_bar);
+            ambiances = itemView.findViewById(R.id.item_ambiances_bar);
+            commentaire = itemView.findViewById(R.id.item_commentaire_bar);
         }
     }
 }
