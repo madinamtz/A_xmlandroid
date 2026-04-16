@@ -2,6 +2,7 @@ package com.example.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,11 +12,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import com.google.firebase.firestore.FirebaseFirestore; // IMPORT FIREBASE
+
 import java.util.Calendar;
 
 public class InscriptionActivity extends AppCompatActivity {
 
     private AppDatabase db;
+    private FirebaseFirestore dbFirebase; // DÉCLARATION FIREBASE
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,11 +30,15 @@ public class InscriptionActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
+        // Initialisation Room
         db = Room.databaseBuilder(
                 getApplicationContext(),
                 AppDatabase.class,
                 "app_database"
-        ).build();
+        ).fallbackToDestructiveMigration().build();
+
+        // INITIALISATION FIREBASE
+        dbFirebase = FirebaseFirestore.getInstance();
 
         Button inscriptionBtn = findViewById(R.id.inscription_btn);
         EditText emailInput = findViewById(R.id.inscription_email);
@@ -50,26 +58,21 @@ public class InscriptionActivity extends AppCompatActivity {
             String pass = passwordInput.getText().toString();
             String confirm = confirmInput.getText().toString();
 
-            // 1. Vérification des champs vides
             if (email.isEmpty() || pseudo.isEmpty() || dob.isEmpty() || pass.isEmpty() || confirm.isEmpty()) {
                 showError(error, "Veuillez remplir tous les champs");
                 return;
             }
 
-            // 2. Validation du format Email
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 showError(error, "Format d'email invalide");
                 return;
             }
 
-            // 3. Validation de la Date (Format JJ/MM/AAAA)
-            // Regex : 2 chiffres / 2 chiffres / 4 chiffres
             if (!dob.matches("^[0-9]{2}/[0-9]{2}/[0-9]{4}$")) {
                 showError(error, "Date invalide (Format: JJ/MM/AAAA)");
                 return;
             }
 
-            // 4. Vérification logique de l'année (ex: pas avant 1900, pas dans le futur)
             try {
                 int year = Integer.parseInt(dob.substring(6));
                 int currentYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -82,18 +85,15 @@ public class InscriptionActivity extends AppCompatActivity {
                 return;
             }
 
-            // 5. Correspondance des mots de passe
             if (!pass.equals(confirm)) {
                 showError(error, "Les mots de passe ne correspondent pas");
                 return;
             }
 
-            // Tout est OK -> On lance la vérification en base
             error.setVisibility(View.INVISIBLE);
 
             new Thread(() -> {
                 User existant = db.utilisateurDao().verifierEmailExiste(email);
-
                 runOnUiThread(() -> {
                     if (existant != null) {
                         showError(error, "Cet email est déjà utilisé");
@@ -105,16 +105,24 @@ public class InscriptionActivity extends AppCompatActivity {
         });
     }
 
-    // Méthode pour extraire la création d'utilisateur et garder le code propre
     private void creerNouvelUtilisateur(String email, String pseudo, String dob, String pass) {
         new Thread(() -> {
+            // 1. Création de l'objet User
             User newUser = new User();
             newUser.email = email;
             newUser.nom = pseudo;
             newUser.dateNaissance = dob;
             newUser.password = pass;
 
+            // 2. Sauvegarde locale (Room)
             db.utilisateurDao().inserer(newUser);
+
+            // 3. SAUVEGARDE EN LIGNE (Firebase Firestore)
+            dbFirebase.collection("users")
+                    .document(email) // L'email sert d'identifiant unique sur le cloud
+                    .set(newUser)
+                    .addOnSuccessListener(aVoid -> Log.d("Firebase", "User ajouté avec succès !"))
+                    .addOnFailureListener(e -> Log.e("Firebase", "Erreur d'ajout : " + e.getMessage()));
 
             runOnUiThread(() -> {
                 Toast.makeText(InscriptionActivity.this, "Inscription réussie !", Toast.LENGTH_SHORT).show();
@@ -125,7 +133,6 @@ public class InscriptionActivity extends AppCompatActivity {
         }).start();
     }
 
-    // Petite méthode pour afficher l'erreur
     private void showError(TextView errorTv, String message) {
         errorTv.setText(message);
         errorTv.setVisibility(View.VISIBLE);

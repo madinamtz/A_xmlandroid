@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,7 +32,6 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         // 1. Initialisation de la Base de Données
-        // Ajout de fallbackToDestructiveMigration pour éviter les crashs de changement de version
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "app_database")
                 .fallbackToDestructiveMigration()
                 .build();
@@ -48,18 +48,35 @@ public class HomeActivity extends AppCompatActivity {
         Button addBarBtn = findViewById(R.id.add_bar_btn);
         RecyclerView recyclerViewBars = findViewById(R.id.recycler_bars);
 
+        // Liaison des icônes du haut
+        ImageView btnGoToSearch = findViewById(R.id.btn_go_to_search);
+        ImageView btnNotifications = findViewById(R.id.btn_notifications);
+
         welcome.setText("Bienvenue " + utilisateurNom);
 
         // --- ACTIONS DES BOUTONS ---
 
-        addBarBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, AjoutBarActivity.class);
+        // Icône Loupe -> Recherche
+        btnGoToSearch.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, RechercheActivity.class);
+            startActivity(intent);
+        });
+
+        // Icône Cloche -> Notifications (Demandes d'amis)
+        btnNotifications.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, NotificationsActivity.class);
+            startActivity(intent);
+        });
+
+        // Bouton Profil -> Vers ton Profil (ou à définir)
+        profilBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, ProfilActivity.class);
             intent.putExtra("USER_ID", userId);
             startActivity(intent);
         });
 
-        profilBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, ProfilActivity.class);
+        addBarBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, AjoutBarActivity.class);
             intent.putExtra("USER_ID", userId);
             startActivity(intent);
         });
@@ -74,12 +91,9 @@ public class HomeActivity extends AppCompatActivity {
             finish();
         });
 
-        // --- CONFIGURATION DE LA LISTE DES BARS (AVEC LA NOUVELLE PAGE) ---
-
-        // On remplace le popup par l'ouverture de BarDetailActivity
+        // --- CONFIGURATION DE LA LISTE DES BARS ---
         barAdapter = new BarAdapter(bar -> {
             Intent intent = new Intent(HomeActivity.this, BarDetailActivity.class);
-            // On passe l'ID du bar pour que la page de détails puisse le charger
             intent.putExtra("BAR_ID", bar.id);
             startActivity(intent);
         });
@@ -94,8 +108,6 @@ public class HomeActivity extends AppCompatActivity {
         String utilisateurMaj = prefs.getString("utilisateur_connecte", "Anonyme");
         TextView welcome = findViewById(R.id.welcome_text);
         welcome.setText("Bienvenue " + utilisateurMaj);
-
-        // Recharger la liste des bars
         chargerMesBars();
     }
 
